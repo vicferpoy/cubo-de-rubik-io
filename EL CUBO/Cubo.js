@@ -250,6 +250,15 @@ class Cubo extends THREE.Mesh {
 		this.mouseUp = true;
 	}
 
+	swapPositions(pos){
+		var aux = [];
+		aux.push(pos[0]);
+		for (let i = (pos.length - 1); i > 0; i--)
+			aux.push(pos[i]);
+		for (let i = 0; i < pos.length; i++)
+			pos[i] = aux [i];
+	}
+
 	// Función encargada de mostrar los controles de la interfaz
 	createGUI () {
 		this.guiControls = new function () {
@@ -276,15 +285,15 @@ class Cubo extends THREE.Mesh {
 		//folder.add (this.guiControls, 'rotacionY', 0.0, 2*Math.PI, Math.PI/4).name ('Rotación Y : ').listen();
 		//folder.add (this.guiControls, 'rotacionZ', 0.0, 2*Math.PI, Math.PI/4).name ('Rotación Z : ').listen();
 		
-		folder.add (this.guiControls, 'giroSeccionX1', 0.0, 90.0, 1.0).name ('Giro Sec X1: ').listen();
-		folder.add (this.guiControls, 'giroSeccionX2', 0.0, 90.0, 1.0).name ('Giro Sec X2: ').listen();
-		folder.add (this.guiControls, 'giroSeccionX3', 0.0, 90.0, 1.0).name ('Giro Sec X3: ').listen();
-		folder.add (this.guiControls, 'giroSeccionY1', 0.0, 90.0, 1.0).name ('Giro Sec Y1: ').listen();
-		folder.add (this.guiControls, 'giroSeccionY2', 0.0, 90.0, 1.0).name ('Giro Sec Y2: ').listen();
-		folder.add (this.guiControls, 'giroSeccionY3', 0.0, 90.0, 1.0).name ('Giro Sec Y3: ').listen();
-		folder.add (this.guiControls, 'giroSeccionZ1', 0.0, 90.0, 1.0).name ('Giro Sec Z1: ').listen();
-		folder.add (this.guiControls, 'giroSeccionZ2', 0.0, 90.0, 1.0).name ('Giro Sec Z2: ').listen();
-		folder.add (this.guiControls, 'giroSeccionZ3', 0.0, 90.0, 1.0).name ('Giro Sec Z3: ').listen();
+		folder.add (this.guiControls, 'giroSeccionX1', -90.0, 90.0, 1.0).name ('Giro Sec X1: ').listen();
+		folder.add (this.guiControls, 'giroSeccionX2', -90.0, 90.0, 1.0).name ('Giro Sec X2: ').listen();
+		folder.add (this.guiControls, 'giroSeccionX3', -90.0, 90.0, 1.0).name ('Giro Sec X3: ').listen();
+		folder.add (this.guiControls, 'giroSeccionY1', -90.0, 90.0, 1.0).name ('Giro Sec Y1: ').listen();
+		folder.add (this.guiControls, 'giroSeccionY2', -90.0, 90.0, 1.0).name ('Giro Sec Y2: ').listen();
+		folder.add (this.guiControls, 'giroSeccionY3', -90.0, 90.0, 1.0).name ('Giro Sec Y3: ').listen();
+		folder.add (this.guiControls, 'giroSeccionZ1', -90.0, 90.0, 1.0).name ('Giro Sec Z1: ').listen();
+		folder.add (this.guiControls, 'giroSeccionZ2', -90.0, 90.0, 1.0).name ('Giro Sec Z2: ').listen();
+		folder.add (this.guiControls, 'giroSeccionZ3', -90.0, 90.0, 1.0).name ('Giro Sec Z3: ').listen();
 	}
 
 	/*
@@ -317,7 +326,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationX(giro);
+			matrix.makeRotationX(-giro);
 
 			this.controlSecX1 = this.guiControls.giroSeccionX1;
 
@@ -333,15 +342,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionX1 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX1));
-					matrix.makeRotationX(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX1));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionX1 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX1));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionX1)) * (-1);
-					matrix.makeRotationX(giro_final);
 				}
+				matrix.makeRotationX(-giro_final);
 				this.cubies[12].applyMatrix(matrix);
 				this.rotaCubos(matrix, positions);
 
@@ -361,7 +375,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationX(giro);
+			matrix.makeRotationX(-giro);
 
 			this.controlSecX2 = this.guiControls.giroSeccionX2;
 
@@ -374,15 +388,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionX2 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX2));
-					matrix.makeRotationX(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX2));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionX2 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX2));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionX2)) * (-1);
-					matrix.makeRotationX(giro_final);
 				}
+				matrix.makeRotationX(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
@@ -403,7 +422,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationX(giro);
+			matrix.makeRotationX(-giro);
 
 			this.controlSecX3 = this.guiControls.giroSeccionX3;
 
@@ -415,20 +434,23 @@ class Cubo extends THREE.Mesh {
 			// Devuelve la palanquita a 0
 			//this.guiControls.giroSeccionX1 = 0.0;
 			// Si es multiplo de 90º, se rotan las caras
-
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionX3 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX3));
-					matrix.makeRotationX(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX3));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionX3 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionX3));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionX3)) * (-1);
-					matrix.makeRotationX(giro_final);
 				}
-				//this.cubies[12].applyMatrix(matrix);
+				matrix.makeRotationX(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
@@ -448,7 +470,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationY(giro);
+			matrix.makeRotationY(-giro);
 
 			this.controlSecY1 = this.guiControls.giroSeccionY1;
 
@@ -463,15 +485,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionY1 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY1));
-					matrix.makeRotationY(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY1));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionY1 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY1));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionY1)) * (-1);
-					matrix.makeRotationY(giro_final);
 				}
+				matrix.makeRotationY(-giro_final);
 				this.cubies[16].applyMatrix(matrix);
 				this.rotaCubos(matrix, positions);
 
@@ -491,7 +518,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationY(giro);
+			matrix.makeRotationY(-giro);
 
 			this.controlSecY2 = this.guiControls.giroSeccionY2;
 
@@ -505,15 +532,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionY2 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY2));
-					matrix.makeRotationY(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY2));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionY2 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY2));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionY2)) * (-1);
-					matrix.makeRotationY(giro_final);
 				}
+				matrix.makeRotationY(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
@@ -532,7 +564,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationY(giro);
+			matrix.makeRotationY(-giro);
 
 			this.controlSecY3 = this.guiControls.giroSeccionY3;
 
@@ -546,15 +578,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionY3 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY3));
-					matrix.makeRotationY(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY3));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionY3 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionY3));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionY3)) * (-1);
-					matrix.makeRotationY(giro_final);
 				}
+				matrix.makeRotationY(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
@@ -574,7 +611,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationZ(giro);
+			matrix.makeRotationZ(-giro);
 
 			this.controlSecZ1 = this.guiControls.giroSeccionZ1;
 
@@ -589,17 +626,22 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionZ1 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ1));
-					matrix.makeRotationZ(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ1));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionZ1 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ1));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionZ1)) * (-1);
-					matrix.makeRotationZ(giro_final);
 				}
-				this.rotaCubos(matrix, positions);
+				matrix.makeRotationZ(-giro_final);
 				this.cubies[4].applyMatrix(matrix);
+				this.rotaCubos(matrix, positions);
 
 
 				this.guiControls.giroSeccionZ1 = 0.0;
@@ -617,7 +659,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationZ(giro);
+			matrix.makeRotationZ(-giro);
 
 			this.controlSecZ2 = this.guiControls.giroSeccionZ2;
 
@@ -631,15 +673,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionZ2 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ2));
-					matrix.makeRotationZ(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ2));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionZ2 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ2));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionZ2)) * (-1);
-					matrix.makeRotationZ(giro_final);
 				}
+				matrix.makeRotationZ(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
@@ -658,7 +705,7 @@ class Cubo extends THREE.Mesh {
 			//Crea la matriz que se va a usar para rotar los elementos
 			var matrix = new THREE.Matrix4();
 			//Rota la matriz
-			matrix.makeRotationZ(giro);
+			matrix.makeRotationZ(-giro);
 
 			this.controlSecZ3 = this.guiControls.giroSeccionZ3;
 
@@ -672,15 +719,20 @@ class Cubo extends THREE.Mesh {
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionZ3 >= 45.0){
-					giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ3));
-					matrix.makeRotationZ(giro_final);
+				this.swapPositions(positions);
+				giro_final = (Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ3));
 				this.changePositions(positions);
 				this.changePositions(positions);
+				}
+				else if (this.guiControls.giroSeccionZ3 <= -45.0){
+					giro_final = (-1 * Math.PI / 2) - (this.toRadians(this.guiControls.giroSeccionZ3));
+					this.changePositions(positions);
+					this.changePositions(positions);
 				}
 				else {
 					giro_final = (this.toRadians(this.guiControls.giroSeccionZ3)) * (-1);
-					matrix.makeRotationZ(giro_final);
 				}
+				matrix.makeRotationZ(-giro_final);
 				this.rotaCubos(matrix, positions);
 
 
