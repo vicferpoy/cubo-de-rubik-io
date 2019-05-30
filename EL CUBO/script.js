@@ -84,7 +84,6 @@ function mouseDown(event){
   	    y : event.clientY
   	  };
   }
-
   else if (event.which == 1){
   	scene.cubo.mouseUpFalse();
   }

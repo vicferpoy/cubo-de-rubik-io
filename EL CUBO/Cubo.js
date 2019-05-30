@@ -14,6 +14,7 @@ class Cubo extends THREE.Mesh {
 		this.coloresMateriales = [];
 		this.setColoresMateriales();
 		this.mouseUp = false;
+		this.contadorRand = 0;
 
 		this.cubeDim = 3;
 
@@ -54,12 +55,10 @@ class Cubo extends THREE.Mesh {
 
 	// Define las posiciones de cada cubito que forma el cubo de Rubik
 	getCubePositions(){
-		let cont = 0;
 		for(let z = 1; z >= -1; z--){
 			for (let y = -1; y <= 1; y++){
 				for (let x = 1; x >= -1; x--){
 					this.cubePositions.push([x * this.cubeDim, y * this.cubeDim, z * this.cubeDim]);
-					cont++;
 				}
 			}
 		}
@@ -275,6 +274,11 @@ class Cubo extends THREE.Mesh {
 			this.giroSeccionZ1 = 0.0;
 			this.giroSeccionZ2 = 0.0;
 			this.giroSeccionZ3 = 0.0;
+			this.isRandom = false;
+
+			this.random = function(){
+				this.isRandom = true;
+			}
 		} 
 		
 		// Se crea una sección para los controles de la caja
@@ -294,6 +298,7 @@ class Cubo extends THREE.Mesh {
 		folder.add (this.guiControls, 'giroSeccionZ1', -90.0, 90.0, 1.0).name ('Giro Sec Z1: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ2', -90.0, 90.0, 1.0).name ('Giro Sec Z2: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ3', -90.0, 90.0, 1.0).name ('Giro Sec Z3: ').listen();
+		folder.add (this.guiControls, 'random').name('[RANDOM]');
 	}
 
 	/*
@@ -338,7 +343,6 @@ class Cubo extends THREE.Mesh {
 			// Devuelve la palanquita a 0
 			//this.guiControls.giroSeccionX1 = 0.0;
 			// Si es multiplo de 90º, se rotan las caras
-
 			if (this.mouseUp){
 				var giro_final;
 				if (this.guiControls.giroSeccionX1 >= 45.0){
@@ -744,6 +748,7 @@ class Cubo extends THREE.Mesh {
 
 	}
 
+	// Rota todos los cubos del array positions según la matriz matrix
 	rotaCubos(matrix, positions){
 		this.cubies[positions[0]].applyMatrix(matrix);
 		this.cubies[positions[1]].applyMatrix(matrix);
@@ -754,13 +759,67 @@ class Cubo extends THREE.Mesh {
 		this.cubies[positions[6]].applyMatrix(matrix);
 		this.cubies[positions[7]].applyMatrix(matrix);
 	}
+	// Función encargada de rotar 90º una cara aleatoria 
+	randomize(){
+			var cara = Math.floor(Math.random() * 9);
+			switch(cara){
+				case 0:
+					this.guiControls.giroSeccionX1 = 90;
+					break;
 
-	update(){
-		// Esta función rota todo el objeto sobre todos los ejes
-		//this.rotation.set (0.0, this.guiControls.rotacionY, this.guiControls.rotacionZ);
-		this.decideGiros();
+				case 1:
+					this.guiControls.giroSeccionX2 = 90;
+					break;
+
+				case 2:
+					this.guiControls.giroSeccionX3 = 90;
+					break;
+
+				case 3:
+					this.guiControls.giroSeccionY1 = 90;
+					break;
+
+				case 4:
+					this.guiControls.giroSeccionY2 = 90;
+					break;
+
+				case 5:
+					this.guiControls.giroSeccionY3 = 90;
+					break;
+
+				case 6:
+					this.guiControls.giroSeccionZ1 = 90;
+					break;
+
+				case 7:
+					this.guiControls.giroSeccionZ2 = 90;
+					break;
+
+				case 8:GUI
+					this.guiControls.giroSeccionZ3 = 90;
+					break;
+			}
+			this.mouseUpTrue();
 	}
 
+	update(){
+		// Comprobación para saber si se ha pulsado el botón RANDOM para mover el cubo
+		// de forma aleatoria
+		if(this.guiControls.isRandom){
+			this.contadorRand += 1;
+			if ((this.contadorRand % 10) == 1)
+				this.randomize();
+			if(this.contadorRand > 200)
+				this.guiControls.isRandom = false;
+		}
+		
+		// Función que se encarga de realizar los giros en cada eje
+		this.decideGiros();
+
+		
+	}
+
+	// Convierte grados en radianes
 	toRadians(degrees){
 		var pi = Math.PI;
 		return degrees * (pi/180);
