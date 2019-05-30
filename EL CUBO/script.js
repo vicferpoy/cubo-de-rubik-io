@@ -9,12 +9,33 @@ renderer = null;
 /// El objeto que referencia a la interfaz gráfica de usuario
 gui = null;
 
+// La última posición del mouse
 var lastMPos = {};
+// Controlar si se está arrastrando el click
 var isDragging = false;
 var originalRotation = {
 	x : 0,
 	y : 0,
-	z : 0
+  z : 0
+};
+
+// Esta serie de variables controlan el giro
+/**
+ * heDecidido: indica si se ha decidido en qué eje va a ser la rotación
+ * girandoX/girandoY: indica que se está rotando ese eje
+ * decidiendoRotacion: Contador que en los I siguientes frames va a acumular las variación de posicion x,y del ratón
+ * contadorX/contadorY: la acumulación de decidiendoRotacion
+ * posInicialGiro: posicion del raton en el momento que se presionó
+ */
+var heDecidido = false;
+var girandoY = false;
+var girandoX = false;
+var decidiendoRotacion = 0;
+var contadorX = 0.0;
+var contadorY = 0.0;
+var posInicialGiro = {
+  x: 0.0,
+  y: 0.0
 };
 
 /// Se crea y configura un renderer WebGL
@@ -64,16 +85,45 @@ function mouseMove(event){
   if (isDragging){
 	  if (typeof(lastMPos.x) != 'undefined'){
 	      var deltaX = lastMPos.x - event.clientX,
-	          deltaY = lastMPos.y - event.clientY;
+          deltaY = lastMPos.y - event.clientY;
 
-	      scene.cubo.rotation.y -= deltaX * 0.005;
-	      scene.cubo.rotation.x -= deltaY * 0.01;
+        // Este primer condicional va a comprobar la variacion de X e Y en un lapso de tiempo pequeño
+        if(decidiendoRotacion < 6){
+          contadorX += deltaX;
+          contadorY += deltaY;
+          decidiendoRotacion++;
+        }else{
+          // Este condicional es el que va a activar los flags necesarios para el giro además de decidir qué eje va a rotar en función de lo que el usuario mueva
+          if(((Math.abs(contadorX)>(Math.abs(contadorY))) && !heDecidido)){
+            heDecidido = true;
+            girandoY = true;
+            girandoX = false;
+          }
+          if(((Math.abs(contadorX)<(Math.abs(contadorY))) && !heDecidido)){
+            heDecidido = true;
+            girandoX = true;
+            girandoY = false;
+          }
+        }
+
+        if(girandoY){
+          scene.cubo.rotation.y -= deltaX * 0.005;
+        }
+        if(girandoX){
+          scene.cubo.rotation.x -= deltaY * 0.01;
+        }
 	  }
 	  lastMPos = {
 	    x : event.clientX,
 	    y : event.clientY
 	  };
-	}
+  }
+
+  /*
+  // Esto es solo para mostrar las coordenadas X e Y del ratón. Para las pruebas 
+  document.getElementById("posX").innerHTML =  posInicialGiro.x;
+  document.getElementById("posY").innerHTML =  posInicialGiro.y;
+  */
 }
 
 function mouseDown(event){
@@ -82,7 +132,8 @@ function mouseDown(event){
   	lastMPos = {
   	    x : event.clientX,
   	    y : event.clientY
-  	  };
+    };
+    posInicialGiro = lastMPos;
   }
   else if (event.which == 1){
   	scene.cubo.mouseUpFalse();
@@ -91,10 +142,76 @@ function mouseDown(event){
 
 function mouseUp(event){
   if (event.which == 3){
-  	isDragging = false;
+    isDragging = false;
+    
   	scene.cubo.rotation.x = originalRotation.x;
   	scene.cubo.rotation.y = originalRotation.y;
-  	scene.cubo.rotation.z = originalRotation.z;
+    scene.cubo.rotation.z = originalRotation.z;
+    
+
+    // Primero se decide la rotación, de cuantos grados va a ser
+    let final = 0.0;
+    // Hay que llamar a la función update y mouseUpTrue para que entre a la función decidirGiro esas 3 veces
+    if(girandoY)
+    {
+      final = posInicialGiro.x - event.clientX;
+      if (final > 250){
+        scene.cubo.guiControls.giroSeccionY1  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionY2  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionY3  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+      }
+      if (final < -250){
+        scene.cubo.guiControls.giroSeccionY1  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionY2  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionY3  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+      }
+    }
+    if(girandoX)
+    {
+      final = posInicialGiro.y - event.clientY;
+      if (final > 160){
+        scene.cubo.guiControls.giroSeccionX1  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionX2  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionX3  = 90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+      }
+      if (final < -160){
+        scene.cubo.guiControls.giroSeccionX1  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionX2  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+        scene.cubo.guiControls.giroSeccionX3  = -90;
+        scene.cubo.update();
+        scene.cubo.mouseUpTrue();
+      }
+    }
+
+    // Luego, se reinician los valores que ayudan a manejar la rotación
+    heDecidido = false;
+    girandoX = false;
+    girandoY = false;
+    contadorX = 0.0;
+    contadorY = 0.0;
+    decidiendoRotacion = 0.0;
   }
   else if (event.which == 1){
   		scene.cubo.mouseUpTrue();

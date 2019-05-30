@@ -15,6 +15,7 @@ class Cubo extends THREE.Mesh {
 		this.setColoresMateriales();
 		this.mouseUp = false;
 		this.contadorRand = 0;
+		this.contadorRot = 0.0;
 
 		this.cubeDim = 3;
 
@@ -298,7 +299,7 @@ class Cubo extends THREE.Mesh {
 		folder.add (this.guiControls, 'giroSeccionZ1', -90.0, 90.0, 1.0).name ('Giro Sec Z1: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ2', -90.0, 90.0, 1.0).name ('Giro Sec Z2: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ3', -90.0, 90.0, 1.0).name ('Giro Sec Z3: ').listen();
-		folder.add (this.guiControls, 'random').name('[RANDOM]');
+		folder.add (this.guiControls, 'random').name('¿Me desordeno?');
 	}
 
 	/*
@@ -807,10 +808,19 @@ class Cubo extends THREE.Mesh {
 		// de forma aleatoria
 		if(this.guiControls.isRandom){
 			this.contadorRand += 1;
-			if ((this.contadorRand % 10) == 1)
+			this.rotation.x += 0.05;
+			this.rotation.y += 0.05;
+			this.rotation.z += 0.05;
+			if ((this.contadorRand % 10) == 1){
 				this.randomize();
-			if(this.contadorRand > 200)
+			}
+
+			if(this.contadorRand > 200){
 				this.guiControls.isRandom = false;
+				this.rotation.x = 0;
+				this.rotation.y = 0;
+				this.rotation.z = 0;
+			}
 		}
 		
 		// Función que se encarga de realizar los giros en cada eje
