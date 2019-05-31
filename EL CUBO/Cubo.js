@@ -16,6 +16,7 @@ class Cubo extends THREE.Mesh {
 		this.mouseUp = false;
 		this.contadorRand = 0;
 		this.contadorRot = 0.0;
+		this.sound = document.getElementById("sound");
 
 		this.cubeDim = 3;
 
@@ -26,12 +27,13 @@ class Cubo extends THREE.Mesh {
 		this.cubies = [];
 
 		this.makeCubies();
-
-
 		this.setCubies();
+
 
 		for (let i = 0; i < this.cubies.length; i++){
 			this.add(this.cubies[i]);
+			// Se le añade un nombre a cada cubie para comprobar si se ha resuelto
+			this.cubies[i].name = i;
 		}
 
 		this.controlSecX1 = 0.0;
@@ -44,7 +46,9 @@ class Cubo extends THREE.Mesh {
 		this.controlSecZ2 = 0.0;
 		this.controlSecZ3 = 0.0;
 
+
 	}
+
 
 
 	/*
@@ -70,6 +74,7 @@ class Cubo extends THREE.Mesh {
 		let geometry = new THREE.BoxGeometry(this.cubeDim - 0.1, this.cubeDim - 0.1, this.cubeDim - 0.1);
 		
 		// Se inicializa cada cubito del Cubo de Rubik
+		// derecha-detrás-izquierda-abajo-delante-arriba
 		// CUBO 0
 		this.cubies[0] = new THREE.Mesh(geometry, [this.coloresMateriales[0], this.coloresMateriales[6],
 			this.coloresMateriales[6], this.coloresMateriales[3],this.coloresMateriales[4],this.coloresMateriales[6]]);
@@ -154,21 +159,99 @@ class Cubo extends THREE.Mesh {
 		this.cubies[26] = new THREE.Mesh(geometry, [this.coloresMateriales[6], this.coloresMateriales[1],
 			this.coloresMateriales[2], this.coloresMateriales[6],this.coloresMateriales[6],this.coloresMateriales[5]]);
 	}
+	
+	// Esta función comprueba que los cubos están en su lugar respecto la versión original
+	uSure(){
+		/*
+		let judge = true;
+		for(let i = 0; i < this.cubies.length && judge; i++ ){
+			if(this.cubies[i].name != i){
+				judge = false;
+			}
+		}
+		return judge;
+		*/
+
+		let judge = false;
+		let xis = true;
+		let yis = true;
+		let zis = true;
+		// Comprueba que la cara frontal tiene al menos una coordenada en el mismo igual en todos los cubos
+		for(let i = 0; i < 7; i++){
+			var este = this.getObjectByName( i );
+			var siguiente = this.getObjectByName( i+1 );
+			if(Math.round(este.position.x) != Math.round(siguiente.position.x)){
+				xis = false;
+			}
+			if(Math.round(este.position.y) != Math.round(siguiente.position.y)){
+				yis = false;
+			}
+			if(Math.round(este.position.z) != Math.round(siguiente.position.z)){
+				zis = false;
+			}
+		}
+		// Si la cara anterior pasa la prueba, se pasa ahora a la siguiente
+		if (xis || yis || zis){
+			let xih = true;
+			let yih = true;
+			let zih = true;
+			// Comprueba que la cara del medio tiene al menos una coordenada en el mismo igual en todos los cubos
+			for(let i = 9; i < 17; i++){
+				var este = this.getObjectByName( i );
+				var siguiente = this.getObjectByName( i+1 );
+				if(Math.round(este.position.x) != Math.round(siguiente.position.x)){
+					xih = false;
+				}
+				if(Math.round(este.position.y) != Math.round(siguiente.position.y)){
+					yih = false;
+				}
+				if(Math.round(este.position.z) != Math.round(siguiente.position.z)){
+					zih = false;
+				}
+			}
+
+			if (xih || yih || zih){
+				let xij = true;
+				let yij = true;
+				let zij = true;
+				// Comprueba que la cara Trasera tiene al menos una coordenada en el mismo igual en todos los cubos
+				for(let i = 18; i < 26; i++){
+					var este = this.getObjectByName( i );
+					var siguiente = this.getObjectByName( i+1 );
+					if(Math.round(este.position.x) != Math.round(siguiente.position.x)){
+						xij = false;
+					}
+					if(Math.round(este.position.y) != Math.round(siguiente.position.y)){
+						yij = false;
+					}
+					if(Math.round(este.position.z) != Math.round(siguiente.position.z)){
+						zij = false;
+					}
+				}
+	
+				if (xij || yij || zij){
+					judge = true;
+				}
+			}
+		}
+
+		return judge;
+	}
 
 	// Define una serie de colores y los añade al array colores[]
 	setColors(){
 		// ROJO
 		this.colores[0] = 0xFF0000;
-		// VERDE
-		this.colores[1] = 0x00FF00;
+		// NARANJA
+		this.colores[1] = 0xFF8000;
 		// AZUL
 		this.colores[2] = 0x0000FF;
-		// AMARILLO
-		this.colores[3] = 0xFFFF00;
+		// VERDE
+		this.colores[3] = 0x00FF00;
 		// BLANCO
 		this.colores[4] = 0xFFFFFF;
-		// VIOLETA
-		this.colores[5] = 0xFF00FF;
+		// AMARILLO
+		this.colores[5] = 0xFFFF00;
 		// NEGRO
 		this.colores[6] = 0x000000;
 	}
@@ -227,6 +310,7 @@ class Cubo extends THREE.Mesh {
 				this.cubePositions[i][1],this.cubePositions[i][2]));
 		}
 	}
+
 	/*
 	 Cambia las posiciones del vector cubePositions respecto a la rotación de la cara 
 	 IMPORTANTÍSIMO: Hay que pasarle el vector de posiciones que rotan en sentido horario
@@ -276,14 +360,28 @@ class Cubo extends THREE.Mesh {
 			this.giroSeccionZ2 = 0.0;
 			this.giroSeccionZ3 = 0.0;
 			this.isRandom = false;
+			this.isSolved = false;
 
 			this.random = function(){
 				this.isRandom = true;
+			}
+
+			this.solved = function(){
+				this.isSolved = true;
+			}
+
+			this.vic = function(){
+				window.location.href = "http://github.com/vicferpoy";
+			}
+
+			this.luis = function(){
+				window.location.href = "http://github.com/cotelus";
 			}
 		} 
 		
 		// Se crea una sección para los controles de la caja
 		var folder = gui.addFolder ('Controles del cubo');
+		var doneby = gui.addFolder ('Crafteado por:');
 		// Estas lineas son las que añaden los componentes de la interfaz
 		// Las tres cifras indican un valor mínimo, un máximo y el incremento
 		// Hay que cambiar el Math.PI/4 por Math.PI/2 cuando se haga la rotación bien
@@ -299,7 +397,11 @@ class Cubo extends THREE.Mesh {
 		folder.add (this.guiControls, 'giroSeccionZ1', -90.0, 90.0, 1.0).name ('Giro Sec Z1: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ2', -90.0, 90.0, 1.0).name ('Giro Sec Z2: ').listen();
 		folder.add (this.guiControls, 'giroSeccionZ3', -90.0, 90.0, 1.0).name ('Giro Sec Z3: ').listen();
-		folder.add (this.guiControls, 'random').name('¿Me desordeno?');
+		folder.add (this.guiControls, 'random').name('¿Me desordeno?').listen();
+		folder.add (this.guiControls, 'isSolved').name('¡JA! Te resolví').listen();
+
+		doneby.add (this.guiControls, 'luis').name('Luis Ángel Cotelo Leyva').listen();
+		doneby.add (this.guiControls, 'vic').name('Víctor Fernández Poyatos').listen();
 	}
 
 	/*
@@ -796,7 +898,7 @@ class Cubo extends THREE.Mesh {
 					this.guiControls.giroSeccionZ2 = 90;
 					break;
 
-				case 8:GUI
+				case 8:
 					this.guiControls.giroSeccionZ3 = 90;
 					break;
 			}
@@ -823,6 +925,19 @@ class Cubo extends THREE.Mesh {
 			}
 		}
 		
+		if(this.guiControls.isSolved == true){
+			this.guiControls.isSolved = this.uSure();			
+		}
+
+		if (this.guiControls.isSolved == true){
+			document.getElementById("posX").innerHTML =  "LO RESOLVISTE, ENHORABUENA AMIGO";
+		}else{
+			document.getElementById("posX").innerHTML =  "";
+			this.sound.pause();
+			this.sound.currentTime = 0;
+			this.sound.play();
+		}
+
 		// Función que se encarga de realizar los giros en cada eje
 		this.decideGiros();
 
