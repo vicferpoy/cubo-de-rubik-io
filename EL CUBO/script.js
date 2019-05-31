@@ -19,6 +19,8 @@ var originalRotation = {
   z : 0
 };
 
+var sound;
+
 // Esta serie de variables controlan el giro
 /**
  * heDecidido: indica si se ha decidido en qué eje va a ser la rotación
@@ -69,9 +71,13 @@ function render() {
   
   // Se le pide a la escena que se actualice antes de ser renderizada
   scene.update();
+  if (scene.cubo.sonido){
+    sound.play();
+  }
   
   // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
   renderer.render(scene, scene.getCamera());
+
 }
 
 /// Función que actualiza la razón de aspecto de la cámara y el tamaño de la imagen que genera el renderer en función del tamaño que tenga la ventana
@@ -238,6 +244,7 @@ $(function () {
   
   // Se crea la escena. La escena es una instancia de nuestra propia clase encargada de crear y gestionar todos los elementos que intervienen en la escena.
   scene = new MyScene (renderer.domElement);
+  sound = document.getElementById("sound");
 
   // Finalmente, realizamos el primer renderizado.
   render();

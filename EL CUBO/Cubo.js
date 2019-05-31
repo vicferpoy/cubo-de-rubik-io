@@ -16,7 +16,7 @@ class Cubo extends THREE.Mesh {
 		this.mouseUp = false;
 		this.contadorRand = 0;
 		this.contadorRot = 0.0;
-		this.sound = document.getElementById("sound");
+		this.sonido = false;
 
 		this.cubeDim = 3;
 
@@ -931,11 +931,10 @@ class Cubo extends THREE.Mesh {
 
 		if (this.guiControls.isSolved == true){
 			document.getElementById("posX").innerHTML =  "LO RESOLVISTE, ENHORABUENA AMIGO";
+			this.sonido = true;
 		}else{
 			document.getElementById("posX").innerHTML =  "";
-			this.sound.pause();
-			this.sound.currentTime = 0;
-			this.sound.play();
+			this.sonido = false;
 		}
 
 		// Función que se encarga de realizar los giros en cada eje

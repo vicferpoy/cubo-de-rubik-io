@@ -8,10 +8,7 @@ class MyScene extends THREE.Scene {
 
   constructor (unRenderer) {
     super();
-    
-    // Se añade a la gui los controles para manipular los elementos de esta clase
-    this.createGUI ();
-    
+        
     // Construimos los distinos elementos que tendremos en la escena
     
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
@@ -20,7 +17,7 @@ class MyScene extends THREE.Scene {
     
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera (unRenderer);
-
+    this.lightIntensity = 0.9;
     
     // Esto crea el cubo 3x3x3 
     this.cubo = new Cubo();
@@ -59,30 +56,10 @@ class MyScene extends THREE.Scene {
     // Debe orbitar con respecto al punto de mira de la cámara
     this.cameraControl.target = look;
   }
-  
-  createGUI () {
-    // Se definen los controles que se modificarán desde la GUI
-    // En este caso la intensidad de la luz y si se muestran o no los ejes
-    this.guiControls = new function() {
-      // En el contexto de una función   this   alude a la función
-      this.lightIntensity = 0.9;
-      this.axisOnOff = true;
-      this.flatShading = true;
-    }
 
     // Accedemos a la variable global   gui   declarada en   script.js   para añadirle la parte de interfaz que corresponde a los elementos de esta clase
     
     // Se crea una sección para los controles de esta clase
-    //var folder = gui.addFolder ('Luz y Ejes');
-    
-    // Se le añade un control para la intensidad de la luz
-    //folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
-    
-    // Y otro para mostrar u ocultar los ejes
-    //folder.add (this.guiControls, 'axisOnOff').name ('Mostrar ejes : ');
-
-    //folder.add (this.guiControls, 'flatShading').name('Sombreado: ');
-  }
   
   createLights () {
     // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
@@ -97,7 +74,7 @@ class MyScene extends THREE.Scene {
     // La luz focal, además tiene una posición, y un punto de mira
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
+    this.spotLight = new THREE.SpotLight( 0xffffff, this.lightIntensity );
     this.spotLight.position.set( 20, 20, 20 );
     this.spotLight.castShadow = true;
     this.add (this.spotLight);
@@ -116,6 +93,9 @@ class MyScene extends THREE.Scene {
   
   update () {
     // Se actualizan los elementos de la escena para cada frame
+    // Se actualiza el cubo
     this.cubo.update();
+    // Se actualiza la luz
+    this.spotLight.intensity = this.lightIntensity;
   }
 }
